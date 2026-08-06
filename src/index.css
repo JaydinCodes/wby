@@ -1,0 +1,100 @@
+@import "tailwindcss";
+
+:root {
+  font-family: Inter, system-ui, sans-serif;
+  color: #ffffff;
+  background: #02040c;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  min-width: 320px;
+  overflow-x: hidden;
+}
+
+@property --neon-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes rotate-neon-border {
+  to {
+    --neon-angle: 360deg;
+  }
+}
+
+@keyframes background-drift {
+  0%,
+  100% {
+    transform: translate3d(-3%, -2%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(3%, 2%, 0) scale(1.08);
+  }
+}
+
+.neon-border {
+  position: relative;
+  padding: 2px;
+  overflow: hidden;
+  border-radius: 24px;
+  background: conic-gradient(
+    from var(--neon-angle),
+    #00b7ff,
+    #315cff,
+    #b026ff,
+    #ff178c,
+    #ff3eb5,
+    #00b7ff
+  );
+  animation: rotate-neon-border 5s linear infinite;
+  isolation: isolate;
+}
+
+.neon-border::before {
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  content: "";
+  background: inherit;
+  filter: blur(26px);
+  opacity: 0.65;
+}
+
+.neon-border__content {
+  height: 100%;
+  border-radius: 22px;
+  background:
+    linear-gradient(
+      135deg,
+      rgb(4 10 25 / 94%),
+      rgb(17 4 28 / 92%)
+    );
+  box-shadow:
+    inset 0 0 30px rgb(0 183 255 / 8%),
+    inset 0 0 35px rgb(255 23 140 / 8%);
+}
+
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
