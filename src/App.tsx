@@ -1,85 +1,83 @@
 import { useEffect, useState } from "react";
-import {
-  onAuthStateChanged,
-  type User,
-} from "firebase/auth";
 import { AdminPage } from "./pages/AdminPage";
 import { DisplayPage } from "./pages/DisplayPage";
-import { LoginPage } from "./pages/LoginPage";
-import {
-  subscribeToTeams,
-} from "./lib/teamRespository";
-import { auth } from "./lib/firebase";
+import { initialTeams } from "./data/teams";
 import type { Team } from "./types/team";
 
+const STORAGE_KEY = "wby-leaderboard-teams";
+const ADMIN_PATH = "/control-7x9k";
+
+function loadTeams(): Team[] {
+  try {
+    const stored = localStorage.getItem(STORAGE_KEY);
+
+    if (!stored) {
+      return initialTeams;
+    }
+
+    const parsed: unknown = JSON.parse(stored);
+
+    return Array.isArray(parsed)
+      ? (parsed as Team[])
+      : initialTeams;
+  } catch {
+    return initialTeams;
+  }
+}
+
 export default function App() {
-  const [teams, setTeams] = useState<Team[]>([]);
-  const [user, setUser] = useState<User | null>(null);
-  const [loadingTeams, setLoadingTeams] = useState(true);
-  const [loadingAuth, setLoadingAuth] = useState(true);
-  const [error, setError] = useState("");
-
+  const [teams, setTeams] = useState<Team[]>(loadTeams);
   const isAdminRoute =
-    window.location.pathname === "/admin";
+    window.location.pathname === ADMIN_PATH;
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (nextUser) => {
-        setUser(nextUser);
-        setLoadingAuth(false);
-      },
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify(teams),
     );
-
-    return unsubscribe;
-  }, []);
+  }, [teams]);
 
   useEffect(() => {
-    
+    function handleStorage(event: StorageEvent) {
+      if (
+        event.key !== STORAGE_KEY ||
+        !event.newValue
+      ) {
+        return;
+      }
 
-    const unsubscribe = subscribeToTeams(
-      (nextTeams) => {
-        setTeams(nextTeams);
-        setLoadingTeams(false);
-      },
-      (caughtError) => {
-        console.error(caughtError);
-        setError("Unable to load the leaderboard.");
-        setLoadingTeams(false);
-      },
-    );
+      try {
+        const nextTeams: unknown = JSON.parse(
+          event.newValue,
+        );
 
-    return unsubscribe;
+        if (Array.isArray(nextTeams)) {
+          setTeams(nextTeams as Team[]);
+        }
+      } catch (error) {
+        console.error(
+          "Unable to synchronize scores:",
+          error,
+        );
+      }
+    }
+
+    window.addEventListener("storage", handleStorage);
+
+    return () => {
+      window.removeEventListener(
+        "storage",
+        handleStorage,
+      );
+    };
   }, []);
 
-  if (loadingTeams || loadingAuth) {
-    return (
-      <main className="grid min-h-screen place-items-center bg-[#02040c] text-white">
-        Loading…
-      </main>
-    );
-  }
-
-  if (error) {
-    return (
-      <main className="grid min-h-screen place-items-center bg-[#02040c] text-pink-300">
-        {error}
-      </main>
-    );
-  }
-
-  if (!isAdminRoute) {
-    return <DisplayPage teams={teams} />;
-  }
-
-  if (!user) {
-    return <LoginPage />;
-  }
-
-  return (
+  return isAdminRoute ? (
     <AdminPage
       teams={teams}
-      userEmail={user.email ?? "Admin"}
+      onTeamsChange={setTeams}
     />
+  ) : (
+    <DisplayPage teams={teams} />
   );
 }
