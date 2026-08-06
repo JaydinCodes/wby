@@ -7,30 +7,32 @@ interface LeaderboardProps {
   teams: Team[];
 }
 
-export function Leaderboard({
-  teams,
-}: LeaderboardProps) {
-  const rankedTeams = [...teams].sort(
-    (first, second) => second.score - first.score,
-  );
+export function Leaderboard({ teams }: LeaderboardProps) {
+  const rankedTeams = [...teams].sort((first, second) => {
+    if (second.score !== first.score) {
+      return second.score - first.score;
+    }
+
+    return first.name.localeCompare(second.name);
+  });
 
   return (
-    <AnimatedBorder className="w-full">
-      <section className="p-5 md:p-8">
-        <header className="mb-6 flex items-center gap-4">
-          <div className="rounded-full border border-cyan-400 p-3 shadow-[0_0_20px_rgba(0,183,255,0.45)]">
-            <Trophy className="size-6 text-cyan-300" />
+    <AnimatedBorder className="w-full rounded-[18px] sm:rounded-[24px]">
+      <section className="overflow-hidden p-3 sm:p-5 lg:p-8">
+        <header className="mb-3 flex items-center gap-3 sm:mb-6 sm:gap-4">
+          <div className="grid size-10 shrink-0 place-items-center rounded-full border border-cyan-400 shadow-[0_0_18px_rgba(0,183,255,0.45)] sm:size-12">
+            <Trophy className="size-5 text-cyan-300 sm:size-6" />
           </div>
 
-          <h2 className="text-2xl font-black uppercase md:text-3xl">
+          <h2 className="text-lg font-black uppercase tracking-wide sm:text-2xl lg:text-3xl">
             Leaderboard
           </h2>
         </header>
 
-        <div className="grid grid-cols-[70px_1fr_auto] gap-4 border-b border-white/20 px-3 pb-3 text-sm text-white/65 md:grid-cols-[90px_1fr_auto]">
+        <div className="grid grid-cols-[2.25rem_minmax(0,1fr)_3.5rem] gap-2 border-b border-white/20 px-1 pb-2 text-[0.65rem] font-semibold uppercase tracking-wider text-white/50 sm:grid-cols-[4rem_minmax(0,1fr)_5rem] sm:gap-4 sm:px-3 sm:pb-3 sm:text-sm lg:grid-cols-[5rem_minmax(0,1fr)_7rem]">
           <span>Rank</span>
           <span>Team</span>
-          <span>Points</span>
+          <span className="text-right">Points</span>
         </div>
 
         <ol>
