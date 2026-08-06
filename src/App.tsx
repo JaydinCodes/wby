@@ -5,21 +5,42 @@ import { initialTeams } from "./data/teams";
 import type { Team } from "./types/team";
 
 const STORAGE_KEY = "wby-leaderboard-teams";
-const ADMIN_PATH = "/control-7x9k";
+const ADMIN_PATH = "/wby-score-console-a84m2p";
+
+function isValidTeam(value: unknown): value is Team {
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+
+  const team = value as Partial<Team>;
+
+  return (
+    typeof team.id === "string" &&
+    typeof team.name === "string" &&
+    typeof team.logo === "string" &&
+    typeof team.score === "number" &&
+    Number.isFinite(team.score)
+  );
+}
 
 function loadTeams(): Team[] {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const storedTeams = localStorage.getItem(STORAGE_KEY);
 
-    if (!stored) {
+    if (!storedTeams) {
       return initialTeams;
     }
 
-    const parsed: unknown = JSON.parse(stored);
+    const parsed: unknown = JSON.parse(storedTeams);
 
-    return Array.isArray(parsed)
-      ? (parsed as Team[])
-      : initialTeams;
+    if (
+      !Array.isArray(parsed) ||
+      !parsed.every(isValidTeam)
+    ) {
+      return initialTeams;
+    }
+
+    return parsed;
   } catch {
     return initialTeams;
   }
@@ -27,6 +48,7 @@ function loadTeams(): Team[] {
 
 export default function App() {
   const [teams, setTeams] = useState<Team[]>(loadTeams);
+
   const isAdminRoute =
     window.location.pathname === ADMIN_PATH;
 
@@ -47,16 +69,19 @@ export default function App() {
       }
 
       try {
-        const nextTeams: unknown = JSON.parse(
+        const parsed: unknown = JSON.parse(
           event.newValue,
         );
 
-        if (Array.isArray(nextTeams)) {
-          setTeams(nextTeams as Team[]);
+        if (
+          Array.isArray(parsed) &&
+          parsed.every(isValidTeam)
+        ) {
+          setTeams(parsed);
         }
       } catch (error) {
         console.error(
-          "Unable to synchronize scores:",
+          "Unable to synchronize leaderboard:",
           error,
         );
       }
