@@ -1,6 +1,6 @@
 import { timingSafeEqual } from "node:crypto";
 
-const SCORE_KEY = "wby:scores:v1";
+const SCORE_KEY = "wby:scores:v2";
 const TEAM_IDS = new Set([
   "chosen",
   "eagles-wings",
