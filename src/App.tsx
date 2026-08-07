@@ -15,9 +15,10 @@ import {
 } from "./lib/scoreApi";
 import type { Team } from "./types/team";
 
-const STORAGE_KEY = "wby-leaderboard-teams";
+const STORAGE_KEY = "wby-leaderboard-teams-v2";
 const ADMIN_PATH = "/wby-score-console-a84m2p";
-const SCORE_POLL_INTERVAL_MS = 1000;
+const ACTIVE_SCORE_POLL_INTERVAL_MS = 1000;
+const BACKGROUND_SCORE_POLL_INTERVAL_MS = 15000;
 
 function isValidTeam(value: unknown): value is Team {
   if (!value || typeof value !== "object") {
@@ -200,25 +201,60 @@ export default function App() {
         mergeScores(currentTeams, response.scores),
       );
       setSyncStatus("live");
-      setLastSyncedAt(Date.now());
+
+      // The public display does not render sync timestamps. Avoid forcing
+      // an otherwise unnecessary React render every second there.
+      if (isAdminRoute) {
+        setLastSyncedAt(Date.now());
+      }
     } catch (error) {
       console.error("Remote score sync unavailable:", error);
       setSyncStatus("offline");
     } finally {
       isFetchingRef.current = false;
     }
-  }, []);
+  }, [isAdminRoute]);
 
   useEffect(() => {
-    void refreshScores();
+    let intervalId: number | null = null;
 
-    const intervalId = window.setInterval(
-      () => void refreshScores(),
-      SCORE_POLL_INTERVAL_MS,
+    function startPolling() {
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+
+      void refreshScores();
+
+      const interval =
+        document.visibilityState === "visible"
+          ? ACTIVE_SCORE_POLL_INTERVAL_MS
+          : BACKGROUND_SCORE_POLL_INTERVAL_MS;
+
+      intervalId = window.setInterval(
+        () => void refreshScores(),
+        interval,
+      );
+    }
+
+    function handleVisibilityChange() {
+      startPolling();
+    }
+
+    startPolling();
+    document.addEventListener(
+      "visibilitychange",
+      handleVisibilityChange,
     );
 
     return () => {
-      window.clearInterval(intervalId);
+      if (intervalId !== null) {
+        window.clearInterval(intervalId);
+      }
+
+      document.removeEventListener(
+        "visibilitychange",
+        handleVisibilityChange,
+      );
     };
   }, [refreshScores]);
 
