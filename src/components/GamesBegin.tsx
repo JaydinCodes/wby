@@ -18,10 +18,11 @@ export function GamesBegin({ onFinished }: GamesBeginProps) {
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.18, filter: "blur(16px)" }}
-      transition={{ duration: 0.28 }}
+      exit={{ opacity: 0, scale: 1.08 }}
+      transition={{ duration: 0.24 }}
       className="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-[#02040c] text-white"
     >
+      <div className="show-ambient pointer-events-none absolute inset-0" />
       <div className="show-grid pointer-events-none absolute inset-0 opacity-30" />
       <div className="show-scanlines pointer-events-none absolute inset-0 opacity-25" />
 
@@ -44,9 +45,6 @@ export function GamesBegin({ onFinished }: GamesBeginProps) {
         transition={{ duration: 0.6, delay: 0.45, ease: "easeInOut" }}
         className="pointer-events-none absolute top-[47%] h-12 w-[70%] bg-pink-500/80 shadow-[0_0_50px_#ec4899]"
       />
-
-      <div className="pointer-events-none absolute -left-48 top-0 size-[700px] rounded-full bg-cyan-600/20 blur-[170px]" />
-      <div className="pointer-events-none absolute -right-48 bottom-0 size-[700px] rounded-full bg-pink-600/20 blur-[170px]" />
 
       <div className="relative z-20 px-5 text-center">
         <motion.p
