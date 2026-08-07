@@ -136,6 +136,32 @@ function readBearerToken(request) {
   return token;
 }
 
+function normalizeSecret(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  let normalized = value.trim();
+
+  if (
+    normalized.length >= 2 &&
+    ((normalized.startsWith('"') && normalized.endsWith('"')) ||
+      (normalized.startsWith("'") && normalized.endsWith("'")))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+
+  return normalized;
+}
+
+function getConfiguredAdminKey() {
+  // Prefer the WBY-specific key so a fresh manually-created Vercel variable
+  // can override any stale/managed SCORE_ADMIN_KEY value.
+  return normalizeSecret(
+    process.env.WBY_ADMIN_KEY ?? process.env.SCORE_ADMIN_KEY,
+  );
+}
+
 function secureEqual(left, right) {
   const leftBuffer = Buffer.from(left);
   const rightBuffer = Buffer.from(right);
@@ -148,13 +174,16 @@ function secureEqual(left, right) {
 }
 
 function isAuthorized(request) {
-  const configuredKey = process.env.SCORE_ADMIN_KEY;
+  const configuredKey = getConfiguredAdminKey();
 
   if (!configuredKey) {
     return false;
   }
 
-  return secureEqual(readBearerToken(request), configuredKey);
+  return secureEqual(
+    normalizeSecret(readBearerToken(request)),
+    configuredKey,
+  );
 }
 
 function parseBody(request) {
@@ -182,15 +211,17 @@ export default async function handler(request, response) {
       return;
     }
 
-    if (!process.env.SCORE_ADMIN_KEY) {
+    if (!getConfiguredAdminKey()) {
       sendJson(response, 503, {
-        error: "SCORE_ADMIN_KEY is not configured.",
+        error: "Admin access key is not configured. Add WBY_ADMIN_KEY in Vercel Production environment variables.",
       });
       return;
     }
 
     if (!isAuthorized(request)) {
-      sendJson(response, 401, { error: "Invalid admin access key." });
+      sendJson(response, 401, {
+        error: "Invalid admin access key. This deployment is configured to prefer WBY_ADMIN_KEY over SCORE_ADMIN_KEY.",
+      });
       return;
     }
 
