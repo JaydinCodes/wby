@@ -82,13 +82,11 @@ export function TeamReveal({ team, onFinished }: TeamRevealProps) {
         <div className="flex items-center gap-3">
           <span className="h-2 w-2 rotate-45 bg-cyan-300 shadow-[0_0_14px_#22d3ee]" />
           <p className="text-[0.58rem] font-black uppercase tracking-[0.4em] text-cyan-100 sm:text-xs">
-            WBY // Team Reveal
+            WBY
           </p>
         </div>
 
-        <p className="font-mono text-xs font-black tracking-[0.28em] text-white/55 sm:text-sm">
-          {team.number} / 04
-        </p>
+      
       </motion.div>
 
       {/* Team number stamp */}
@@ -157,12 +155,7 @@ export function TeamReveal({ team, onFinished }: TeamRevealProps) {
         className="pointer-events-none absolute right-2 top-[13%] z-[15] w-[clamp(9rem,22vw,22rem)] sm:right-8 lg:right-14"
       >
         <div className="absolute inset-0 scale-75 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-500/20 blur-3xl" />
-        <img
-          src={team.logo}
-          alt=""
-          aria-hidden="true"
-          className="team-crest-integrated relative w-full object-contain drop-shadow-[0_0_26px_rgba(34,211,238,0.5)]"
-        />
+      
       </motion.div>
 
       {/* READY pulse near the cut */}

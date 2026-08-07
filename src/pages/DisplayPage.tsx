@@ -259,9 +259,7 @@ function StartScreen({
           </span>
         </motion.button>
 
-        <p className="mt-5 text-[0.58rem] font-bold uppercase tracking-[0.3em] text-white/35 sm:text-xs">
-          One click starts music + full presentation
-        </p>
+       
       </div>
     </motion.main>
   );

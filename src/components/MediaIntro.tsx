@@ -68,11 +68,9 @@ export function MediaIntro({ onFinished }: MediaIntroProps) {
         className="absolute left-5 top-5 border-l-2 border-cyan-300 pl-3 sm:left-9 sm:top-8"
       >
         <p className="text-[0.6rem] font-black uppercase tracking-[0.42em] text-cyan-200 sm:text-xs">
-          WBY // Opening Sequence
+          WBY 
         </p>
-        <p className="mt-1 text-[0.55rem] font-bold uppercase tracking-[0.26em] text-white/45 sm:text-[0.65rem]">
-          Presentation speed {INTRO_PLAYBACK_RATE}x
-        </p>
+
       </motion.div>
 
       <button
