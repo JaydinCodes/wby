@@ -4,25 +4,25 @@ export const initialTeams: Team[] = [
   {
     id: "chosen",
     name: "The Chosen",
-    score: 124,
+    score: 0,
     logo: "/images/chosen.png",
   },
   {
     id: "eagles-wings",
     name: "Eagles Wings",
-    score: 98,
+    score: 0,
     logo: "/images/eagles.png",
   },
   {
     id: "pathfinders",
     name: "Pathfinders",
-    score: 76,
+    score: 0,
     logo: "/images/pathfinders.png",
   },
   {
     id: "striped-warriors",
     name: "Striped Warriors",
-    score: 52,
+    score: 0,
     logo: "/images/striped.png",
   },
 ];
