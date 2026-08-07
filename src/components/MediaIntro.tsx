@@ -24,8 +24,8 @@ export function MediaIntro({ onFinished }: MediaIntroProps) {
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.04, filter: "blur(10px)" }}
-      transition={{ duration: 0.35 }}
+      exit={{ opacity: 0, scale: 1.025 }}
+      transition={{ duration: 0.28 }}
       className="fixed inset-0 z-50 overflow-hidden bg-black text-white"
     >
       <motion.video
@@ -68,15 +68,14 @@ export function MediaIntro({ onFinished }: MediaIntroProps) {
         className="absolute left-5 top-5 border-l-2 border-cyan-300 pl-3 sm:left-9 sm:top-8"
       >
         <p className="text-[0.6rem] font-black uppercase tracking-[0.42em] text-cyan-200 sm:text-xs">
-          WBY 
+          WBY
         </p>
-
       </motion.div>
 
       <button
         type="button"
         onClick={finishIntro}
-        className="absolute bottom-5 right-5 border border-white/15 bg-black/35 px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.2em] text-white/60 backdrop-blur-md transition hover:border-cyan-300/60 hover:text-white sm:bottom-8 sm:right-8"
+        className="absolute bottom-5 right-5 border border-white/15 bg-black/55 px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.2em] text-white/60 transition hover:border-cyan-300/60 hover:text-white sm:bottom-8 sm:right-8"
       >
         Skip intro
       </button>
