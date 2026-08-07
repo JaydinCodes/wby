@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/wby-score-console-a84m2p",
       "destination": "/index.html"
     }
   ]
