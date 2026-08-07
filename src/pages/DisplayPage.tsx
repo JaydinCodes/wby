@@ -33,6 +33,37 @@ interface DisplayPageProps {
   teams: Team[];
 }
 
+const MEDIA_PREFETCH_BY_STAGE: Partial<
+  Record<ShowStage, string[]>
+> = {
+  waiting: ["/media/intro.mp4"],
+  intro: [chosenReveal.video, eaglesReveal.video],
+  chosen: [eaglesReveal.video, pathfindersReveal.video],
+  eagles: [pathfindersReveal.video, warriorsReveal.video],
+  pathfinders: [warriorsReveal.video],
+};
+
+function prefetchMedia(urls: string[]) {
+  const links = urls.map((url) => {
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.href = url;
+
+    if (url.endsWith(".mp4")) {
+      link.as = "video";
+    } else if (url.endsWith(".mp3")) {
+      link.as = "audio";
+    }
+
+    document.head.appendChild(link);
+    return link;
+  });
+
+  return () => {
+    links.forEach((link) => link.remove());
+  };
+}
+
 export function DisplayPage({
   teams,
 }: DisplayPageProps) {
@@ -98,6 +129,16 @@ export function DisplayPage({
   const finishGamesBegin = useCallback(() => {
     setStage("leaderboard");
   }, []);
+
+  useEffect(() => {
+    const urls = MEDIA_PREFETCH_BY_STAGE[stage];
+
+    if (!urls?.length) {
+      return;
+    }
+
+    return prefetchMedia(urls);
+  }, [stage]);
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -195,17 +236,13 @@ function StartScreen({
     <motion.main
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.06, filter: "blur(10px)" }}
-      transition={{ duration: 0.35 }}
+      exit={{ opacity: 0, scale: 1.04 }}
+      transition={{ duration: 0.3 }}
       className="fixed inset-0 z-[100] grid place-items-center overflow-hidden bg-[#02040c] px-5 text-white"
     >
+      <div className="show-ambient pointer-events-none absolute inset-0" />
       <div className="show-grid pointer-events-none absolute inset-0 opacity-30" />
       <div className="show-scanlines pointer-events-none absolute inset-0 opacity-25" />
-
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-52 top-0 size-[650px] rounded-full bg-blue-600/30 blur-[170px]" />
-        <div className="absolute -right-52 bottom-0 size-[650px] rounded-full bg-pink-600/30 blur-[170px]" />
-      </div>
 
       <motion.div
         initial={{ x: "-120%" }}
@@ -258,8 +295,6 @@ function StartScreen({
             Start Games
           </span>
         </motion.button>
-
-       
       </div>
     </motion.main>
   );
@@ -300,13 +335,7 @@ function LeaderboardScreen({
         lg:px-10 lg:py-8
       "
     >
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute -left-40 top-0 size-[420px] rounded-full bg-blue-600/20 blur-[120px] sm:size-[600px] sm:blur-[150px]" />
-
-        <div className="absolute -right-40 bottom-0 size-[430px] rounded-full bg-pink-600/20 blur-[120px] sm:size-[650px] sm:blur-[160px]" />
-
-        <div className="absolute left-1/2 top-1/2 size-[280px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-600/10 blur-[120px]" />
-      </div>
+      <div className="show-ambient pointer-events-none fixed inset-0" />
 
       <div className="relative mx-auto w-full max-w-[1600px]">
         <header className="mb-4 border-b border-white/10 pb-4 sm:mb-6 sm:pb-5 lg:mb-8 lg:pb-6">
