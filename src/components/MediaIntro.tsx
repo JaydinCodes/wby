@@ -71,14 +71,6 @@ export function MediaIntro({ onFinished }: MediaIntroProps) {
           WBY
         </p>
       </motion.div>
-
-      <button
-        type="button"
-        onClick={finishIntro}
-        className="absolute bottom-5 right-5 border border-white/15 bg-black/55 px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.2em] text-white/60 transition hover:border-cyan-300/60 hover:text-white sm:bottom-8 sm:right-8"
-      >
-        Skip intro
-      </button>
     </motion.section>
   );
 }
