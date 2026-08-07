@@ -24,26 +24,9 @@ body {
   overflow-x: hidden;
 }
 
-@property --neon-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes rotate-neon-border {
+@keyframes rotate-neon-layer {
   to {
-    --neon-angle: 360deg;
-  }
-}
-
-@keyframes background-drift {
-  0%,
-  100% {
-    transform: translate3d(-3%, -2%, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(3%, 2%, 0) scale(1.08);
+    transform: rotate(1turn);
   }
 }
 
@@ -52,8 +35,18 @@ body {
   padding: 2px;
   overflow: hidden;
   border-radius: 24px;
+  isolation: isolate;
+  box-shadow:
+    0 0 20px rgb(0 183 255 / 14%),
+    0 0 24px rgb(255 23 140 / 10%);
+}
+
+.neon-border::before {
+  position: absolute;
+  inset: -120%;
+  z-index: 0;
+  content: "";
   background: conic-gradient(
-    from var(--neon-angle),
     #00b7ff,
     #315cff,
     #b026ff,
@@ -61,21 +54,13 @@ body {
     #ff3eb5,
     #00b7ff
   );
-  animation: rotate-neon-border 5s linear infinite;
-  isolation: isolate;
-}
-
-.neon-border::before {
-  position: absolute;
-  inset: -40%;
-  z-index: -1;
-  content: "";
-  background: inherit;
-  filter: blur(26px);
-  opacity: 0.65;
+  animation: rotate-neon-layer 5s linear infinite;
+  will-change: transform;
 }
 
 .neon-border__content {
+  position: relative;
+  z-index: 1;
   height: 100%;
   border-radius: 22px;
   background:
@@ -99,15 +84,26 @@ body {
   animation: spin-slow 3s linear infinite;
 }
 
-@media (min-width: 640px) {
-  .neon-border {
-    border-radius: 24px;
-  }
-
-  .neon-border__content {
-    border-radius: 22px;
-  }
+.show-ambient {
+  background:
+    radial-gradient(
+      circle at 6% 8%,
+      rgb(37 99 235 / 24%),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 94% 92%,
+      rgb(219 39 119 / 23%),
+      transparent 37%
+    ),
+    radial-gradient(
+      circle at 50% 52%,
+      rgb(147 51 234 / 9%),
+      transparent 30%
+    );
+  transform: translateZ(0);
 }
+
 .show-scanlines {
   pointer-events: none;
   background-image: repeating-linear-gradient(
@@ -139,22 +135,6 @@ body {
   -webkit-text-stroke: 1px rgb(255 255 255 / 8%);
 }
 
-.team-crest-integrated {
-  mix-blend-mode: screen;
-  mask-image: radial-gradient(
-    ellipse 75% 72% at 50% 50%,
-    black 48%,
-    rgb(0 0 0 / 92%) 67%,
-    transparent 100%
-  );
-  -webkit-mask-image: radial-gradient(
-    ellipse 75% 72% at 50% 50%,
-    black 48%,
-    rgb(0 0 0 / 92%) 67%,
-    transparent 100%
-  );
-}
-
 .start-slash-panel {
   clip-path: polygon(7% 0, 100% 0, 93% 100%, 0 100%);
 }
@@ -165,5 +145,12 @@ body {
       -2px 0 0 rgb(34 211 238 / 65%),
       2px 1px 0 rgb(236 72 153 / 55%),
       0 0 24px rgb(0 0 0 / 85%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .neon-border::before,
+  .animate-spin-slow {
+    animation: none;
   }
 }
