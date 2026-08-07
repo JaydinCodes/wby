@@ -286,9 +286,6 @@ export default function App() {
       lastSyncedAt={lastSyncedAt}
     />
   ) : (
-    <DisplayPage
-      teams={teams}
-      syncStatus={syncStatus}
-    />
+    <DisplayPage teams={teams} />
   );
 }
