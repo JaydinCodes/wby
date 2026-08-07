@@ -16,8 +16,8 @@ export function TeamReveal({ team, onFinished }: TeamRevealProps) {
     <motion.section
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      exit={{ opacity: 0, scale: 1.06, filter: "blur(12px)" }}
-      transition={{ duration: 0.28 }}
+      exit={{ opacity: 0, scale: 1.035 }}
+      transition={{ duration: 0.24 }}
       className="fixed inset-0 z-50 overflow-hidden bg-black text-white"
     >
       <motion.video
@@ -85,8 +85,6 @@ export function TeamReveal({ team, onFinished }: TeamRevealProps) {
             WBY
           </p>
         </div>
-
-      
       </motion.div>
 
       {/* Team number stamp */}
@@ -146,17 +144,6 @@ export function TeamReveal({ team, onFinished }: TeamRevealProps) {
           </div>
         </motion.div>
       </div>
-
-      {/* Crest slam — screen blend removes the generated dark rectangle feel */}
-      <motion.div
-        initial={{ opacity: 0, scale: 1.65, rotate: -8, x: 80, filter: "blur(16px)" }}
-        animate={{ opacity: 1, scale: 1, rotate: 0, x: 0, filter: "blur(0px)" }}
-        transition={{ delay: 4.15, type: "spring", stiffness: 250, damping: 16, mass: 0.72 }}
-        className="pointer-events-none absolute right-2 top-[13%] z-[15] w-[clamp(9rem,22vw,22rem)] sm:right-8 lg:right-14"
-      >
-        <div className="absolute inset-0 scale-75 rounded-full bg-gradient-to-br from-cyan-400/20 to-pink-500/20 blur-3xl" />
-      
-      </motion.div>
 
       {/* READY pulse near the cut */}
       <motion.div
