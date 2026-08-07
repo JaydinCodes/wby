@@ -5,6 +5,7 @@ import {
   useState,
 } from "react";
 import {
+  ChevronsRight,
   Play,
   Volume2,
   VolumeX,
@@ -43,6 +44,15 @@ const MEDIA_PREFETCH_BY_STAGE: Partial<
   pathfinders: [warriorsReveal.video],
 };
 
+const NEXT_STAGE: Partial<Record<ShowStage, ShowStage>> = {
+  intro: "chosen",
+  chosen: "eagles",
+  eagles: "pathfinders",
+  pathfinders: "warriors",
+  warriors: "games-begin",
+  "games-begin": "leaderboard",
+};
+
 function prefetchMedia(urls: string[]) {
   const links = urls.map((url) => {
     const link = document.createElement("link");
@@ -74,25 +84,45 @@ export function DisplayPage({
 
   const [isMuted, setIsMuted] = useState(false);
 
-  async function startGames() {
+  const startSoundtrack = useCallback(async () => {
     const audio = audioRef.current;
 
-    try {
-      if (audio) {
-        audio.currentTime = 0;
-        await audio.play();
-      }
+    if (!audio) {
+      return;
+    }
 
-      setStage("intro");
+    audio.currentTime = 0;
+
+    try {
+      await audio.play();
     } catch (error) {
       console.error(
         "Unable to start presentation audio:",
         error,
       );
-
-      // Still start the presentation if audio fails.
-      setStage("intro");
     }
+  }, []);
+
+  async function startGames() {
+    await startSoundtrack();
+    setStage("intro");
+  }
+
+  async function skipPresentationFromStart() {
+    await startSoundtrack();
+    setStage("leaderboard");
+  }
+
+  function skipCurrentStage() {
+    const nextStage = NEXT_STAGE[stage];
+
+    if (nextStage) {
+      setStage(nextStage);
+    }
+  }
+
+  function skipAllPresentation() {
+    setStage("leaderboard");
   }
 
   function toggleMute() {
@@ -148,9 +178,11 @@ export function DisplayPage({
     };
   }, []);
 
+  const showSkipControls =
+    stage !== "waiting" && stage !== "leaderboard";
+
   return (
     <>
-      {/* One continuous soundtrack for the whole show */}
       <audio
         ref={audioRef}
         src="/media/leaderboard-song.mp3"
@@ -163,6 +195,7 @@ export function DisplayPage({
           <StartScreen
             key="waiting"
             onStart={startGames}
+            onSkipPresentation={skipPresentationFromStart}
           />
         )}
 
@@ -221,16 +254,56 @@ export function DisplayPage({
           />
         )}
       </AnimatePresence>
+
+      {showSkipControls && (
+        <PresentationSkipControls
+          onSkipStage={skipCurrentStage}
+          onSkipAll={skipAllPresentation}
+        />
+      )}
     </>
+  );
+}
+
+interface PresentationSkipControlsProps {
+  onSkipStage: () => void;
+  onSkipAll: () => void;
+}
+
+function PresentationSkipControls({
+  onSkipStage,
+  onSkipAll,
+}: PresentationSkipControlsProps) {
+  return (
+    <div className="fixed bottom-5 right-5 z-[120] flex items-center gap-2 sm:bottom-8 sm:right-8">
+      <button
+        type="button"
+        onClick={onSkipStage}
+        className="rounded-lg border border-white/15 bg-black/55 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-white/65 backdrop-blur-md transition hover:border-cyan-300/60 hover:text-white active:scale-95 sm:px-4 sm:text-xs"
+      >
+        Skip Stage
+      </button>
+
+      <button
+        type="button"
+        onClick={onSkipAll}
+        className="flex items-center gap-2 rounded-lg border border-pink-400/35 bg-pink-500/10 px-3 py-2 text-[0.62rem] font-black uppercase tracking-[0.16em] text-pink-200 backdrop-blur-md transition hover:border-pink-300 hover:bg-pink-500/20 active:scale-95 sm:px-4 sm:text-xs"
+      >
+        <ChevronsRight className="size-4" />
+        Skip All
+      </button>
+    </div>
   );
 }
 
 interface StartScreenProps {
   onStart: () => Promise<void>;
+  onSkipPresentation: () => Promise<void>;
 }
 
 function StartScreen({
   onStart,
+  onSkipPresentation,
 }: StartScreenProps) {
   return (
     <motion.main
@@ -294,6 +367,18 @@ function StartScreen({
             <Play className="size-5 fill-current" />
             Start Games
           </span>
+        </motion.button>
+
+        <motion.button
+          type="button"
+          onClick={() => void onSkipPresentation()}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8, duration: 0.25 }}
+          className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-white/45 transition hover:text-white sm:text-sm"
+        >
+          <ChevronsRight className="size-4" />
+          Skip presentation
         </motion.button>
       </div>
     </motion.main>
