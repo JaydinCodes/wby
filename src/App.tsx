@@ -20,20 +20,45 @@ const ADMIN_PATH = "/wby-score-console-a84m2p";
 const ACTIVE_SCORE_POLL_INTERVAL_MS = 1000;
 const BACKGROUND_SCORE_POLL_INTERVAL_MS = 15000;
 
-function isValidTeam(value: unknown): value is Team {
+
+interface StoredTeam {
+  id: string;
+  score: number;
+}
+
+function isStoredTeam(value: unknown): value is StoredTeam {
   if (!value || typeof value !== "object") {
     return false;
   }
 
-  const team = value as Partial<Team>;
+  const team = value as Partial<StoredTeam>;
 
   return (
     typeof team.id === "string" &&
-    typeof team.name === "string" &&
-    typeof team.logo === "string" &&
     typeof team.score === "number" &&
     Number.isFinite(team.score)
   );
+}
+
+function hydrateTeams(value: unknown): Team[] {
+  if (!Array.isArray(value)) {
+    return initialTeams;
+  }
+
+  const storedScores = new Map<string, number>();
+
+  for (const team of value) {
+    if (!isStoredTeam(team)) {
+      continue;
+    }
+
+    storedScores.set(team.id, team.score);
+  }
+
+  return initialTeams.map((team) => ({
+    ...team,
+    score: storedScores.get(team.id) ?? team.score,
+  }));
 }
 
 function loadTeams(): Team[] {
@@ -44,16 +69,7 @@ function loadTeams(): Team[] {
       return initialTeams;
     }
 
-    const parsed: unknown = JSON.parse(storedTeams);
-
-    if (
-      !Array.isArray(parsed) ||
-      !parsed.every(isValidTeam)
-    ) {
-      return initialTeams;
-    }
-
-    return parsed;
+    return hydrateTeams(JSON.parse(storedTeams));
   } catch {
     return initialTeams;
   }
@@ -147,42 +163,40 @@ export default function App() {
   }, [teams]);
 
   useEffect(() => {
-    function handleStorage(event: StorageEvent) {
-      if (
-        event.key !== STORAGE_KEY ||
-        !event.newValue
-      ) {
-        return;
-      }
-
-      try {
-        const parsed: unknown = JSON.parse(
-          event.newValue,
-        );
-
-        if (
-          Array.isArray(parsed) &&
-          parsed.every(isValidTeam)
-        ) {
-          setTeams(parsed);
-        }
-      } catch (error) {
-        console.error(
-          "Unable to synchronize local leaderboard:",
-          error,
-        );
-      }
+  function handleStorage(event: StorageEvent) {
+    if (
+      event.key !== STORAGE_KEY ||
+      !event.newValue
+    ) {
+      return;
     }
 
-    window.addEventListener("storage", handleStorage);
-
-    return () => {
-      window.removeEventListener(
-        "storage",
-        handleStorage,
+    try {
+      const parsed: unknown = JSON.parse(
+        event.newValue,
       );
-    };
-  }, []);
+
+      setTeams(hydrateTeams(parsed));
+    } catch (error) {
+      console.error(
+        "Unable to synchronize local leaderboard:",
+        error,
+      );
+    }
+  }
+
+  window.addEventListener(
+    "storage",
+    handleStorage,
+  );
+
+  return () => {
+    window.removeEventListener(
+      "storage",
+      handleStorage,
+    );
+  };
+}, []);
 
   const refreshScores = useCallback(async () => {
     if (
