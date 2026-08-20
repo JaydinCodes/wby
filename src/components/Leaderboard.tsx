@@ -75,6 +75,9 @@ export function Leaderboard({
     return () => {
       window.clearTimeout(timeout);
     };
+  // Depend on the specific leader fields used by the effect, rather than the
+  // newly sorted team object created during every render.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     leader?.id,
     leader?.name,
@@ -97,6 +100,7 @@ export function Leaderboard({
               key={team.id}
               team={team}
               rank={index + 1}
+              isPriority={index === 0}
             />
           ))}
         </ol>

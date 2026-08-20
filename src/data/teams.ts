@@ -8,7 +8,8 @@ export const initialTeams: Team[] = [
     score: 0,
     logo: "/images/chosen.png",
 
-    heroImage: "/images/team-art/chosen-hero.png",
+    desktopHeroImage: "/images/team-art/optimized/chosen-hero-1440.webp",
+    mobileHeroImage: "/images/team-art/optimized/chosen-hero-720.webp",
 
     accent: "#22d3ee",
     accentGlow: "rgba(34, 211, 238, 0.55)",
@@ -23,7 +24,8 @@ export const initialTeams: Team[] = [
     score: 0,
     logo: "/images/eagles.png",
 
-    heroImage: "/images/team-art/eagles-hero.png",
+    desktopHeroImage: "/images/team-art/optimized/eagles-hero-1440.webp",
+    mobileHeroImage: "/images/team-art/optimized/eagles-hero-720.webp",
 
     accent: "#fbbf24",
     accentGlow: "rgba(251, 191, 36, 0.55)",
@@ -38,7 +40,8 @@ export const initialTeams: Team[] = [
     score: 0,
     logo: "/images/pathfinders.png",
 
-    heroImage: "/images/team-art/pathfinders-hero.png",
+    desktopHeroImage: "/images/team-art/optimized/pathfinders-hero-1440.webp",
+    mobileHeroImage: "/images/team-art/optimized/pathfinders-hero-720.webp",
 
     accent: "#a855f7",
     accentGlow: "rgba(168, 85, 247, 0.55)",
@@ -53,7 +56,8 @@ export const initialTeams: Team[] = [
     score: 0,
     logo: "/images/striped.png",
 
-    heroImage: "/images/team-art/striped-hero.png",
+    desktopHeroImage: "/images/team-art/optimized/striped-hero-1440.webp",
+    mobileHeroImage: "/images/team-art/optimized/striped-hero-720.webp",
 
     accent: "#f97316",
     accentGlow: "rgba(249, 115, 22, 0.55)",

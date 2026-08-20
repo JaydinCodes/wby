@@ -4,7 +4,8 @@ export interface Team {
   score: number;
   logo: string;
 
-  heroImage: string;
+  desktopHeroImage: string;
+  mobileHeroImage: string;
 
   accent: string;
   accentGlow: string;

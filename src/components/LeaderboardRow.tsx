@@ -18,6 +18,7 @@ import type { Team } from "../types/team";
 interface LeaderboardRowProps {
   team: Team;
   rank: number;
+  isPriority: boolean;
 }
 
 function usePrevious<T>(value: T) {
@@ -33,6 +34,7 @@ function usePrevious<T>(value: T) {
 export function LeaderboardRow({
   team,
   rank,
+  isPriority,
 }: LeaderboardRowProps) {
   const previousScore = usePrevious(team.score);
   const previousRank = usePrevious(rank);
@@ -58,6 +60,12 @@ export function LeaderboardRow({
   const style = {
     "--team-accent": team.accent,
     "--team-glow": team.accentGlow,
+    "--mobile-name-size":
+      team.name.length >= 16
+        ? "clamp(1.05rem, calc(3vw + 0.5rem), 1.55rem)"
+        : team.name.length >= 12
+          ? "clamp(1.25rem, calc(3.5vw + 0.55rem), 1.9rem)"
+          : "clamp(1.4rem, calc(4.1vw + 0.55rem), 2.15rem)",
     "--hero-position":
       team.heroPosition ?? "76% 50%",
     "--hero-scale": String(
@@ -118,10 +126,19 @@ export function LeaderboardRow({
           className="leaderboard-row__art"
           aria-hidden="true"
         >
-          <img
-            src={team.heroImage}
-            alt=""
-          />
+          <picture>
+            <source
+              media="(max-width: 820px)"
+              srcSet={team.mobileHeroImage}
+            />
+            <img
+              src={team.desktopHeroImage}
+              alt=""
+              decoding="async"
+              loading="eager"
+              fetchPriority={isPriority ? "high" : "auto"}
+            />
+          </picture>
         </div>
 
         <div

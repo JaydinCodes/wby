@@ -38,21 +38,10 @@ const MEDIA_PREFETCH_BY_STAGE: Partial<
   Record<ShowStage, string[]>
 > = {
   waiting: ["/media/intro.mp4"],
-  intro: [
-    chosenReveal.video,
-    eaglesReveal.video,
-  ],
-  chosen: [
-    eaglesReveal.video,
-    pathfindersReveal.video,
-  ],
-  eagles: [
-    pathfindersReveal.video,
-    warriorsReveal.video,
-  ],
-  pathfinders: [
-    warriorsReveal.video,
-  ],
+  intro: [chosenReveal.video],
+  chosen: [eaglesReveal.video],
+  eagles: [pathfindersReveal.video],
+  pathfinders: [warriorsReveal.video],
 };
 
 const NEXT_STAGE: Partial<
@@ -210,7 +199,7 @@ export function DisplayPage({
       <audio
         ref={audioRef}
         src="/media/leaderboard-song.mp3"
-        preload="auto"
+        preload="metadata"
         loop
       />
 
