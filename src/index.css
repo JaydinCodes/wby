@@ -4958,11 +4958,15 @@ span:first-child {
     width: 100%;
   }
 
-  .leaderboard-row__name-wrap,
+  .leaderboard-row__name-wrap{
+    min-width: 0;
+    flex: 1;
+  }
   .leaderboard-row__name {
-    max-width: 100%;
-    overflow: visible;
-    text-overflow: clip;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .leaderboard-row__name {
